@@ -50,9 +50,7 @@ class TransaksiController extends GetxController {
   }
 
   Future<void> editTransaksi(TransaksiModel transaksi) async {
-    final updated = transaksi.copyWith(updatedAt: DateTime.now());
-
-    await _repository.update(updated);
+    await _repository.update(transaksi.copyWith(updatedAt: DateTime.now()));
     await loadTransaksi();
   }
 

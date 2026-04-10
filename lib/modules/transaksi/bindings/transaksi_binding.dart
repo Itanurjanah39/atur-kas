@@ -10,6 +10,8 @@ class TransaksiBinding extends Bindings {
       Get.lazyPut<TransaksiController>(() => TransaksiController());
     }
 
-    Get.lazyPut<TransaksiFormController>(() => TransaksiFormController());
+    if (!Get.isRegistered<TransaksiFormController>()) {
+      Get.lazyPut<TransaksiFormController>(() => TransaksiFormController());
+    }
   }
 }

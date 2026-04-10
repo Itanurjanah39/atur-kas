@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../data/models/transaksi_model.dart';
 import '../../../shared/themes/app_colors.dart';
 import '../../../shared/utils/date_helper.dart';
 import '../controllers/transaksi_controller.dart';
@@ -14,7 +15,13 @@ class TransaksiFormView extends GetView<TransaksiFormController> {
     final transaksiController = Get.find<TransaksiController>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tambah Transaksi')),
+      appBar: AppBar(
+        title: Obx(
+          () => Text(
+            controller.isEditMode.value ? 'Edit Transaksi' : 'Tambah Transaksi',
+          ),
+        ),
+      ),
       body: Form(
         key: controller.formKey,
         child: ListView(
@@ -87,7 +94,7 @@ class TransaksiFormView extends GetView<TransaksiFormController> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppColors.tertiary.withValues(alpha: 0.7),
+                      color: AppColors.tertiary.withOpacity(0.7),
                     ),
                   ),
                   child: Row(
@@ -141,34 +148,64 @@ class TransaksiFormView extends GetView<TransaksiFormController> {
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () async {
-                final isValid =
-                    controller.formKey.currentState?.validate() ?? false;
+            Obx(
+              () => ElevatedButton(
+                onPressed: () async {
+                  final isValid =
+                      controller.formKey.currentState?.validate() ?? false;
 
-                if (!isValid) return;
+                  if (!isValid) return;
 
-                await transaksiController.tambahTransaksi(
-                  tanggal: controller.selectedTanggal.value,
-                  keterangan: controller.keteranganController.text.trim(),
-                  nominal: controller.parseNominal(),
-                  tipe: controller.selectedTipe.value,
-                  kategori: controller.kategoriValue,
-                );
+                  if (controller.isEditMode.value &&
+                      controller.editingTransaksi != null) {
+                    final old = controller.editingTransaksi!;
 
-                Get.back();
+                    final updated = old.copyWith(
+                      tanggal: controller.selectedTanggal.value,
+                      keterangan: controller.keteranganController.text.trim(),
+                      nominal: controller.parseNominal(),
+                      tipe: controller.selectedTipe.value,
+                      kategori: controller.kategoriValue,
+                      updatedAt: DateTime.now(),
+                    );
 
-                Get.snackbar(
-                  'Berhasil',
-                  'Transaksi berhasil ditambahkan',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: AppColors.primary,
-                  colorText: Colors.white,
-                  margin: const EdgeInsets.all(16),
-                  borderRadius: 12,
-                );
-              },
-              child: const Text('Simpan'),
+                    await transaksiController.editTransaksi(updated);
+
+                    Get.back();
+
+                    Get.snackbar(
+                      'Berhasil',
+                      'Transaksi berhasil diperbarui',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                      margin: const EdgeInsets.all(16),
+                      borderRadius: 12,
+                    );
+                  } else {
+                    await transaksiController.tambahTransaksi(
+                      tanggal: controller.selectedTanggal.value,
+                      keterangan: controller.keteranganController.text.trim(),
+                      nominal: controller.parseNominal(),
+                      tipe: controller.selectedTipe.value,
+                      kategori: controller.kategoriValue,
+                    );
+
+                    Get.back();
+
+                    Get.snackbar(
+                      'Berhasil',
+                      'Transaksi berhasil ditambahkan',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: AppColors.primary,
+                      colorText: Colors.white,
+                      margin: const EdgeInsets.all(16),
+                      borderRadius: 12,
+                    );
+                  }
+                },
+                child: Text(controller.isEditMode.value ? 'Update' : 'Simpan'),
+              ),
             ),
           ],
         ),

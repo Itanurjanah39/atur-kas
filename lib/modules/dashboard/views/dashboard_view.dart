@@ -98,56 +98,105 @@ class DashboardView extends GetView<TransaksiController> {
                 ...controller.transaksiList.map(
                   (item) => Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: item.tipe == 'pemasukan'
-                              ? AppColors.tertiary
-                              : AppColors.accent,
-                          child: Icon(
-                            item.tipe == 'pemasukan'
-                                ? Icons.arrow_downward
-                                : Icons.arrow_upward,
-                            color: AppColors.black,
-                          ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      onTap: () {
+                        Get.toNamed(AppRoutes.transaksiForm, arguments: item);
+                      },
+                      leading: CircleAvatar(
+                        backgroundColor: item.tipe == 'pemasukan'
+                            ? AppColors.tertiary
+                            : AppColors.accent,
+                        child: Icon(
+                          item.tipe == 'pemasukan'
+                              ? Icons.arrow_downward
+                              : Icons.arrow_upward,
+                          color: AppColors.black,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.keterangan,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                item.kategori ?? '-',
-                                style: const TextStyle(
-                                  color: AppColors.grey,
-                                  fontSize: 12,
-                                ),
+                      ),
+                      title: Text(
+                        item.keterangan,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: Text(
+                        item.kategori ?? '-',
+                        style: const TextStyle(
+                          color: AppColors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            CurrencyHelper.toRupiah(item.nominal),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: item.tipe == 'pemasukan'
+                                  ? AppColors.success
+                                  : AppColors.danger,
+                            ),
+                          ),
+                          PopupMenuButton<String>(
+                            onSelected: (value) async {
+                              if (value == 'edit') {
+                                Get.toNamed(
+                                  AppRoutes.transaksiForm,
+                                  arguments: item,
+                                );
+                              } else if (value == 'delete') {
+                                final confirm = await Get.dialog<bool>(
+                                  AlertDialog(
+                                    title: const Text('Hapus Transaksi'),
+                                    content: const Text(
+                                      'Yakin ingin menghapus transaksi ini?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Get.back(result: false),
+                                        child: const Text('Batal'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Get.back(result: true),
+                                        child: const Text('Hapus'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+
+                                if (confirm == true) {
+                                  await controller.hapusTransaksi(item.id);
+
+                                  Get.snackbar(
+                                    'Berhasil',
+                                    'Transaksi berhasil dihapus',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: AppColors.primary,
+                                    colorText: Colors.white,
+                                    margin: const EdgeInsets.all(16),
+                                    borderRadius: 12,
+                                  );
+                                }
+                              }
+                            },
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(value: 'edit', child: Text('Edit')),
+                              PopupMenuItem(
+                                value: 'delete',
+                                child: Text('Hapus'),
                               ),
                             ],
                           ),
-                        ),
-                        Text(
-                          CurrencyHelper.toRupiah(item.nominal),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: item.tipe == 'pemasukan'
-                                ? AppColors.success
-                                : AppColors.danger,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
