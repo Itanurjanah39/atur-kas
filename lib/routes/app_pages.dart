@@ -1,3 +1,5 @@
+import 'package:atur_kas/modules/transaksi/bindings/transaksi_binding.dart';
+import 'package:atur_kas/modules/transaksi/views/transaksi_form_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/dashboard/bindings/dashboard_binding.dart';
@@ -14,6 +16,11 @@ class AppPages {
       name: AppRoutes.dashboard,
       page: () => const DashboardView(),
       binding: DashboardBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.transaksiForm,
+      page: () => const TransaksiFormView(),
+      binding: TransaksiBinding(),
     ),
   ];
 }

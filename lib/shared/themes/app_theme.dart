@@ -42,7 +42,9 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.tertiary.withOpacity(0.7)),
+          borderSide: BorderSide(
+            color: AppColors.tertiary.withValues(alpha: 0.7),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

@@ -1,3 +1,4 @@
+import 'package:atur_kas/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -155,60 +156,10 @@ class DashboardView extends GetView<TransaksiController> {
         );
       }),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await _showTambahDummyDialog();
+        onPressed: () {
+          Get.toNamed(AppRoutes.transaksiForm);
         },
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  Future<void> _showTambahDummyDialog() async {
-    await Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Wrap(
-            runSpacing: 12,
-            children: [
-              const Text(
-                'Tambah Data Cepat',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await controller.tambahTransaksi(
-                    tanggal: DateTime.now(),
-                    keterangan: 'Pemasukan Baru',
-                    nominal: 50000,
-                    tipe: 'pemasukan',
-                    kategori: 'Umum',
-                  );
-                  Get.back();
-                },
-                child: const Text('Tambah Pemasukan Dummy'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await controller.tambahTransaksi(
-                    tanggal: DateTime.now(),
-                    keterangan: 'Pengeluaran Baru',
-                    nominal: 25000,
-                    tipe: 'pengeluaran',
-                    kategori: 'Belanja',
-                  );
-                  Get.back();
-                },
-                child: const Text('Tambah Pengeluaran Dummy'),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
