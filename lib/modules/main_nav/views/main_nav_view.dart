@@ -5,6 +5,7 @@ import '../../../routes/app_routes.dart';
 import '../../../shared/themes/app_colors.dart';
 import '../../dashboard/views/dashboard_view.dart';
 import '../../laporan/views/laporan_view.dart';
+import '../../info_app/views/info_app_view.dart';
 import '../controllers/main_nav_controller.dart';
 
 class MainNavView extends GetView<MainNavController> {
@@ -15,23 +16,25 @@ class MainNavView extends GetView<MainNavController> {
     final pages = <Widget>[
       const DashboardView(),
       const LaporanView(),
-      const _PengaturanPlaceholderView(),
+      const InfoAppView(),
     ];
 
-    return Obx(
-      () => Scaffold(
-        body: IndexedStack(
-          index: controller.selectedIndex.value,
-          children: pages,
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Get.toNamed(AppRoutes.transaksiForm);
-          },
-          child: const Icon(Icons.add),
-        ),
+    return Obx(() {
+      final currentIndex = controller.selectedIndex.value;
+      final showFab = currentIndex == 0;
+
+      return Scaffold(
+        body: IndexedStack(index: currentIndex, children: pages),
+        floatingActionButton: showFab
+            ? FloatingActionButton(
+                onPressed: () {
+                  Get.toNamed(AppRoutes.transaksiForm);
+                },
+                child: const Icon(Icons.add),
+              )
+            : null,
         bottomNavigationBar: NavigationBar(
-          selectedIndex: controller.selectedIndex.value,
+          selectedIndex: currentIndex,
           onDestinationSelected: controller.changeIndex,
           backgroundColor: Colors.white,
           indicatorColor: AppColors.tertiary,
@@ -46,21 +49,14 @@ class MainNavView extends GetView<MainNavController> {
               selectedIcon: Icon(Icons.assessment),
               label: 'Laporan',
             ),
+            NavigationDestination(
+              icon: Icon(Icons.info_outline),
+              selectedIcon: Icon(Icons.info),
+              label: 'Info App',
+            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _PengaturanPlaceholderView extends StatelessWidget {
-  const _PengaturanPlaceholderView();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Pengaturan')),
-      body: const Center(child: Text('Halaman pengaturan belum dibuat')),
-    );
+      );
+    });
   }
 }
