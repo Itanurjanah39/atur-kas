@@ -72,4 +72,28 @@ class TransaksiController extends GetxController {
   }
 
   double get saldoSaatIni => totalPemasukan - totalPengeluaran;
+  List<TransaksiModel> get transaksiBulanIni {
+    final now = DateTime.now();
+
+    final result = transaksiList.where((item) {
+      return item.tanggal.year == now.year && item.tanggal.month == now.month;
+    }).toList();
+
+    result.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+    return result;
+  }
+
+  double get totalPemasukanBulanIni {
+    return transaksiBulanIni
+        .where((e) => e.tipe == 'pemasukan')
+        .fold(0.0, (sum, item) => sum + item.nominal);
+  }
+
+  double get totalPengeluaranBulanIni {
+    return transaksiBulanIni
+        .where((e) => e.tipe == 'pengeluaran')
+        .fold(0.0, (sum, item) => sum + item.nominal);
+  }
+
+  double get saldoBulanIni => totalPemasukanBulanIni - totalPengeluaranBulanIni;
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../shared/themes/app_colors.dart';
 
-class InfoAppView extends StatelessWidget {
-  const InfoAppView({super.key});
+class KebijakanView extends StatelessWidget {
+  const KebijakanView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,34 +13,20 @@ class InfoAppView extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: const [
-            _HeaderCard(),
+            _PolicyHeaderCard(),
             SizedBox(height: 16),
-            _SectionCard(
-              title: 'Tentang Aplikasi',
-              icon: Icons.apps_rounded,
+            _PolicySectionCard(
+              title: 'Kebijakan & Privasi',
+              icon: Icons.privacy_tip_outlined,
               content:
-                  'Atur Kas adalah aplikasi pencatatan keuangan sederhana yang dirancang untuk membantu pengguna mencatat pemasukan dan pengeluaran dengan cepat, rapi, dan mudah dipahami.',
+                  'Aplikasi Atur Kas menyimpan data transaksi pengguna secara lokal pada perangkat untuk mendukung penggunaan offline. Data yang dicatat tidak dibagikan ke pihak ketiga. Pengguna bertanggung jawab menjaga keamanan perangkat masing-masing agar data tetap aman. Apabila di masa mendatang tersedia sinkronisasi cloud, isi kebijakan privasi dapat diperbarui sesuai pengembangan layanan.',
             ),
             SizedBox(height: 12),
-            _SectionCard(
-              title: 'Tujuan Penggunaan',
-              icon: Icons.track_changes_outlined,
+            _PolicySectionCard(
+              title: 'Syarat & Ketentuan',
+              icon: Icons.description_outlined,
               content:
-                  'Aplikasi ini membantu pengguna memantau arus kas harian, melihat laporan keuangan sederhana, dan menjaga kebiasaan pencatatan keuangan yang lebih teratur.',
-            ),
-            SizedBox(height: 12),
-            _SectionCard(
-              title: 'Fitur Utama',
-              icon: Icons.star_border_rounded,
-              content:
-                  'Fitur utama aplikasi mencakup pencatatan transaksi pemasukan dan pengeluaran, ringkasan saldo, riwayat transaksi bulan berjalan, serta laporan berdasarkan filter jenis, periode, dan kategori.',
-            ),
-            SizedBox(height: 12),
-            _SectionCard(
-              title: 'Versi Aplikasi',
-              icon: Icons.system_update_alt_outlined,
-              content:
-                  'Versi saat ini: 1.0.0\n\nAplikasi masih terus dikembangkan untuk meningkatkan tampilan, kenyamanan, dan fitur yang lebih lengkap.',
+                  'Dengan menggunakan aplikasi ini, pengguna memahami bahwa seluruh data yang dimasukkan merupakan tanggung jawab pengguna sendiri. Aplikasi ini ditujukan untuk membantu pencatatan keuangan pribadi dan bukan merupakan layanan audit, perpajakan, atau nasihat keuangan profesional. Pengguna disarankan untuk memeriksa kembali keakuratan data sebelum digunakan sebagai referensi.',
             ),
             SizedBox(height: 24),
           ],
@@ -50,8 +36,8 @@ class InfoAppView extends StatelessWidget {
   }
 }
 
-class _HeaderCard extends StatelessWidget {
-  const _HeaderCard();
+class _PolicyHeaderCard extends StatelessWidget {
+  const _PolicyHeaderCard();
 
   @override
   Widget build(BuildContext context) {
@@ -68,23 +54,19 @@ class _HeaderCard extends StatelessWidget {
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.account_balance_wallet_rounded,
-            color: Colors.white,
-            size: 40,
-          ),
+          Icon(Icons.verified_user_outlined, color: Colors.white, size: 36),
           SizedBox(height: 12),
           Text(
-            'Atur Kas',
+            'Kebijakan & Ketentuan',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: FontWeight.w700,
             ),
           ),
           SizedBox(height: 6),
           Text(
-            'Aplikasi pencatatan keuangan personal yang sederhana dan praktis.',
+            'Informasi penting mengenai privasi data dan penggunaan aplikasi.',
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
         ],
@@ -93,12 +75,12 @@ class _HeaderCard extends StatelessWidget {
   }
 }
 
-class _SectionCard extends StatelessWidget {
+class _PolicySectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final String content;
 
-  const _SectionCard({
+  const _PolicySectionCard({
     required this.title,
     required this.icon,
     required this.content,
