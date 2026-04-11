@@ -1,41 +1,49 @@
 # 💸 Atur Kas
 
-Aplikasi pencatatan keuangan personal sederhana berbasis Flutter yang membantu pengguna mencatat pemasukan, pengeluaran, dan memantau saldo secara praktis dan modern.
+Aplikasi pencatatan keuangan personal sederhana berbasis Flutter yang membantu pengguna mencatat pemasukan, pengeluaran, dan memantau saldo secara praktis dengan tampilan modern.
 
 ---
 
 ## ✨ Fitur Utama
 
-- 📊 **Dashboard Ringkas**
-  - Menampilkan saldo saat ini
-  - Ringkasan pemasukan & pengeluaran bulan berjalan
-  - Riwayat transaksi bulan berjalan
+### 📊 Dashboard Ringkas
 
-- ➕ **Tambah Transaksi**
-  - Input pemasukan & pengeluaran
-  - Tanggal otomatis (default hari ini)
-  - Kategori opsional
+* Menampilkan saldo saat ini
+* Ringkasan pemasukan & pengeluaran bulan berjalan
+* Riwayat transaksi bulan berjalan
 
-- 📈 **Laporan**
-  - Filter berdasarkan:
-    - Periode (harian / bulanan / tahunan)
-    - Jenis transaksi
-    - Kategori
+### ➕ Tambah Transaksi
 
-- 🧾 **Riwayat Transaksi**
-  - Tampilan modern
-  - Informasi kategori & tanggal
-  - Indicator pemasukan / pengeluaran
+* Input pemasukan & pengeluaran
+* Tanggal otomatis (default hari ini)
+* Kategori opsional
 
-- 🔒 **Offline First**
-  - Data disimpan lokal menggunakan `GetStorage`
-  - Tidak membutuhkan koneksi internet
+### 📈 Laporan
 
-- 📄 **Kebijakan & Info Aplikasi**
-  - Halaman terpisah untuk:
-    - Kebijakan & Privasi
-    - Syarat & Ketentuan
-    - Informasi aplikasi
+* Filter berdasarkan:
+
+  * Periode (harian / bulanan / tahunan)
+  * Jenis transaksi
+  * Kategori
+
+### 🧾 Riwayat Transaksi
+
+* Tampilan modern dan clean
+* Informasi kategori & tanggal
+* Indicator pemasukan / pengeluaran
+
+### 🔒 Offline First
+
+* Data disimpan lokal menggunakan `GetStorage`
+* Tidak membutuhkan koneksi internet
+
+### 📄 Kebijakan & Info Aplikasi
+
+* Halaman terpisah untuk:
+
+  * Kebijakan & Privasi
+  * Syarat & Ketentuan
+  * Informasi aplikasi
 
 ---
 
@@ -43,54 +51,72 @@ Aplikasi pencatatan keuangan personal sederhana berbasis Flutter yang membantu p
 
 Aplikasi menggunakan arsitektur modular berbasis GetX:
 
-``` bash lib/
+```plaintext
+lib/
 │
 ├── data/
-│ └── models/
+│   └── models/
 │
 ├── modules/
-│ ├── dashboard/
-│ ├── transaksi/
-│ ├── laporan/
-│ ├── info_app/
-│ ├── kebijakan/
-│ └── main_nav/
+│   ├── dashboard/
+│   ├── transaksi/
+│   ├── laporan/
+│   ├── info_app/
+│   ├── kebijakan/
+│   └── main_nav/
 │
 ├── routes/
 ├── services/
 ├── shared/
-│ ├── themes/
-│ └── utils/
+│   ├── themes/
+│   └── utils/
 │
-└── main.dart 
+└── main.dart
+```
 
 ---
+
 ## ⚙️ Tech Stack
-- **🚀 Core**
-- Flutter → UI Framework
-- Dart → Programming Language
-- **🧠 State Management**
-- GetX
-- Reactive state (Obx)
-- Dependency Injection
-- Routing
-- **💾 Local Storage**
-- GetStorage
-- Lightweight key-value storage
-- Offline-first architecture
-- Fast read/write
-- **🌐 Internationalization & Formatting**
-- intl
--Format mata uang (Rupiah)
-- Format tanggal (Indonesia)
+
+### 🚀 Core
+
+* **Flutter** → UI Framework
+* **Dart** → Programming Language
+
+### 🧠 State Management
+
+* **GetX**
+
+  * Reactive state (`Obx`)
+  * Dependency Injection
+  * Routing
+
+### 💾 Local Storage
+
+* **GetStorage**
+
+  * Lightweight key-value storage
+  * Offline-first architecture
+  * Fast read/write
+
+### 🌐 Internationalization & Formatting
+
+* **intl**
+
+  * Format mata uang (Rupiah)
+  * Format tanggal (Indonesia)
+
 ---
+
 ## 🎨 Design System
 
 Warna utama aplikasi:
 
-- `#6367FF` → Primary
-- `#8494FF` → Secondary
-- `#C9BEFF` → Tertiary
-- `#FFDBFD` → Accent
+| Role      | Color   |
+| --------- | ------- |
+| Primary   | #6367FF |
+| Secondary | #8494FF |
+| Tertiary  | #C9BEFF |
+| Accent    | #FFDBFD |
 
 ---
