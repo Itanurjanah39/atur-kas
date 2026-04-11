@@ -12,17 +12,7 @@ class DashboardView extends GetView<TransaksiController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Atur Kas'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Get.toNamed(AppRoutes.laporan);
-            },
-            icon: const Icon(Icons.assessment_outlined),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Atur Kas')),
       body: Obx(() {
         return RefreshIndicator(
           onRefresh: controller.loadTransaksi,
@@ -214,12 +204,6 @@ class DashboardView extends GetView<TransaksiController> {
           ),
         );
       }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.toNamed(AppRoutes.transaksiForm);
-        },
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }

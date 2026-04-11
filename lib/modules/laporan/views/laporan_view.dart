@@ -109,7 +109,7 @@ class LaporanView extends GetView<LaporanController> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.16),
+        color: Colors.white.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(

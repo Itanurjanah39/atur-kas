@@ -94,7 +94,7 @@ class TransaksiFormView extends GetView<TransaksiFormController> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppColors.tertiary.withOpacity(0.7),
+                      color: AppColors.tertiary.withValues(alpha: 0.7),
                     ),
                   ),
                   child: Row(
