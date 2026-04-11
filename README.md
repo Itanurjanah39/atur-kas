@@ -43,26 +43,26 @@ Aplikasi pencatatan keuangan personal sederhana berbasis Flutter yang membantu p
 
 Aplikasi menggunakan arsitektur modular berbasis GetX:
 
-``` lib/ ```
-```│```
-```├── data/```
-```│ └── models/```
-```│```
-```├── modules/```
-```│ ├── dashboard/```
-```│ ├── transaksi/```
-```│ ├── laporan/```
-```│ ├── info_app/```
-```│ ├── kebijakan/```
-```│ └── main_nav/```
-```│```
-```├── routes/```
-```├── services/```
-```├── shared/```
-```│ ├── themes/```
-```│ └── utils/```
-```│```
-```└── main.dart ``` 
+``` bash lib/
+│
+├── data/
+│ └── models/
+│
+├── modules/
+│ ├── dashboard/
+│ ├── transaksi/
+│ ├── laporan/
+│ ├── info_app/
+│ ├── kebijakan/
+│ └── main_nav/
+│
+├── routes/
+├── services/
+├── shared/
+│ ├── themes/
+│ └── utils/
+│
+└── main.dart ``` 
 
 ---
 ## ⚙️ Tech Stack
