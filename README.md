@@ -1,16 +1,95 @@
-# atur_kas
+# 💸 Atur Kas
 
-A new Flutter project.
+Aplikasi pencatatan keuangan personal sederhana berbasis Flutter yang membantu pengguna mencatat pemasukan, pengeluaran, dan memantau saldo secara praktis dan modern.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Fitur Utama
 
-A few resources to get you started if this is your first Flutter project:
+- 📊 **Dashboard Ringkas**
+  - Menampilkan saldo saat ini
+  - Ringkasan pemasukan & pengeluaran bulan berjalan
+  - Riwayat transaksi bulan berjalan
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- ➕ **Tambah Transaksi**
+  - Input pemasukan & pengeluaran
+  - Tanggal otomatis (default hari ini)
+  - Kategori opsional
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- 📈 **Laporan**
+  - Filter berdasarkan:
+    - Periode (harian / bulanan / tahunan)
+    - Jenis transaksi
+    - Kategori
+
+- 🧾 **Riwayat Transaksi**
+  - Tampilan modern
+  - Informasi kategori & tanggal
+  - Indicator pemasukan / pengeluaran
+
+- 🔒 **Offline First**
+  - Data disimpan lokal menggunakan `GetStorage`
+  - Tidak membutuhkan koneksi internet
+
+- 📄 **Kebijakan & Info Aplikasi**
+  - Halaman terpisah untuk:
+    - Kebijakan & Privasi
+    - Syarat & Ketentuan
+    - Informasi aplikasi
+
+---
+
+## 🧱 Arsitektur
+
+Aplikasi menggunakan arsitektur modular berbasis GetX:
+lib/
+│
+├── data/
+│ └── models/
+│
+├── modules/
+│ ├── dashboard/
+│ ├── transaksi/
+│ ├── laporan/
+│ ├── info_app/
+│ ├── kebijakan/
+│ └── main_nav/
+│
+├── routes/
+├── services/
+├── shared/
+│ ├── themes/
+│ └── utils/
+│
+└── main.dart
+
+---
+## ⚙️ Tech Stack
+- **🚀 Core**
+- Flutter → UI Framework
+- Dart → Programming Language
+- **🧠 State Management**
+- GetX
+- Reactive state (Obx)
+- Dependency Injection
+- Routing
+- **💾 Local Storage**
+- GetStorage
+- Lightweight key-value storage
+- Offline-first architecture
+- Fast read/write
+- **🌐 Internationalization & Formatting**
+- intl
+-Format mata uang (Rupiah)
+- Format tanggal (Indonesia)
+---
+## 🎨 Design System
+
+Warna utama aplikasi:
+
+- `#6367FF` → Primary
+- `#8494FF` → Secondary
+- `#C9BEFF` → Tertiary
+- `#FFDBFD` → Accent
+
+---
