@@ -1,3 +1,5 @@
+import 'package:atur_kas/modules/laporan/bindings/laporan_binding.dart';
+import 'package:atur_kas/modules/laporan/views/laporan_view.dart';
 import 'package:atur_kas/modules/transaksi/bindings/transaksi_binding.dart';
 import 'package:atur_kas/modules/transaksi/views/transaksi_form_view.dart';
 import 'package:get/get.dart';
@@ -21,6 +23,11 @@ class AppPages {
       name: AppRoutes.transaksiForm,
       page: () => const TransaksiFormView(),
       binding: TransaksiBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.laporan,
+      page: () => const LaporanView(),
+      binding: LaporanBinding(),
     ),
   ];
 }
