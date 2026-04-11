@@ -62,7 +62,7 @@ Aplikasi menggunakan arsitektur modular berbasis GetX:
 │ ├── themes/
 │ └── utils/
 │
-└── main.dart ``` 
+└── main.dart 
 
 ---
 ## ⚙️ Tech Stack
