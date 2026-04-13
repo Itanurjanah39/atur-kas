@@ -1,4 +1,5 @@
 import 'package:atur_kas/routes/app_routes.dart';
+import 'package:atur_kas/shared/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -44,38 +45,36 @@ class LaporanController extends GetxController {
     applyFilter();
   }
 
-  Future<void> pickDateRange(BuildContext context) async {
-    final now = DateTime.now();
-
-    final initialRange = DateTimeRange(
-      start: startDate.value ?? DateTime(now.year, now.month, 1),
-      end: endDate.value ?? DateTime(now.year, now.month + 1, 0),
-    );
-
-    final picked = await showDateRangePicker(
+  Future<void> pickStartDate(BuildContext context) async {
+    final picked = await showDatePicker(
       context: context,
-      initialDateRange: initialRange,
-      firstDate: DateTime(now.year - 10),
-      lastDate: DateTime(now.year + 10),
-      helpText: 'Pilih Periode Laporan',
-      confirmText: 'Terapkan',
+      initialDate: startDate.value ?? DateTime.now(),
+      firstDate: DateTime(DateTime.now().year - 10),
+      lastDate: DateTime(DateTime.now().year + 10),
+      helpText: 'Pilih Tanggal Mulai',
       cancelText: 'Batal',
-      saveText: 'Terapkan',
-      fieldStartHintText: 'Start date',
-      fieldEndHintText: 'End date',
+      confirmText: 'Pilih',
     );
 
     if (picked != null) {
-      startDate.value = DateTime(
-        picked.start.year,
-        picked.start.month,
-        picked.start.day,
-      );
-      endDate.value = DateTime(
-        picked.end.year,
-        picked.end.month,
-        picked.end.day,
-      );
+      startDate.value = DateTime(picked.year, picked.month, picked.day);
+      applyFilter();
+    }
+  }
+
+  Future<void> pickEndDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: endDate.value ?? DateTime.now(),
+      firstDate: DateTime(DateTime.now().year - 10),
+      lastDate: DateTime(DateTime.now().year + 10),
+      helpText: 'Pilih Tanggal Akhir',
+      cancelText: 'Batal',
+      confirmText: 'Pilih',
+    );
+
+    if (picked != null) {
+      endDate.value = DateTime(picked.year, picked.month, picked.day);
       applyFilter();
     }
   }
@@ -221,16 +220,40 @@ class LaporanController extends GetxController {
   }
 
   Future<void> konfirmasiHapus(TransaksiModel item) async {
-    Get.defaultDialog(
-      title: 'Hapus Transaksi',
-      middleText: 'Yakin ingin menghapus "${item.keterangan}"?',
-      textCancel: 'Batal',
-      textConfirm: 'Hapus',
-      confirmTextColor: Colors.white,
-      onConfirm: () async {
-        Get.back();
-        await hapusTransaksi(item);
-      },
+    Get.dialog<bool>(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Hapus Transaksi',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        ),
+        content: Text(
+          'Yakin ingin menghapus "${item.keterangan}"?',
+          style: const TextStyle(fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Get.back();
+              await hapusTransaksi(item);
+            },
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Ya, Hapus'),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
     );
   }
 

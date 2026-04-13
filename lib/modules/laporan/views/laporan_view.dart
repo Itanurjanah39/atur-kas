@@ -187,55 +187,39 @@ class LaporanView extends GetView<LaporanController> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(18),
-                      onTap: () async {
-                        await controller.pickDateRange(context);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.background,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color: AppColors.tertiary.withValues(alpha: 0.35),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Tanggal Mulai',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.grey,
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 42,
-                              height: 42,
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: const Icon(
-                                Icons.date_range_rounded,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                controller.periodeText,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.black,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            const Icon(
-                              Icons.keyboard_arrow_right_rounded,
-                              color: AppColors.grey,
-                            ),
-                          ],
+                        const SizedBox(height: 8),
+                        _DateInput(
+                          text: 'Pilih tanggal mulai',
+                          date: controller.startDate.value,
+                          onTap: () => controller.pickStartDate(context),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Tanggal Akhir',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        _DateInput(
+                          text: 'Pilih tanggal akhir',
+                          date: controller.endDate.value,
+                          onTap: () => controller.pickEndDate(context),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 18),
                     const Text(
@@ -316,6 +300,49 @@ class LaporanView extends GetView<LaporanController> {
         },
       ),
       isScrollControlled: true,
+    );
+  }
+}
+
+class _DateInput extends StatelessWidget {
+  final String text;
+  final DateTime? date;
+  final VoidCallback onTap;
+
+  const _DateInput({required this.text, this.date, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                date != null ? DateHelper.formatTanggal(date!) : text,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.calendar_today_outlined,
+              size: 18,
+              color: AppColors.grey,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
