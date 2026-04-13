@@ -14,5 +14,6 @@ class AppColors {
   static const Color danger = Color(0xFFDC2626);
 
   static const Color background = Color(0xFFF7F8FF);
+  static const Color formBackground = Color(0xFFF0F1F3);
   static const Color card = Color(0xFFFFFFFF);
 }

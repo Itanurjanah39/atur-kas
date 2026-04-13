@@ -1,3 +1,4 @@
+import 'package:atur_kas/shared/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -169,8 +170,8 @@ class TransaksiFormController extends GetxController {
             onPressed: () => Get.back(result: true),
             style: ElevatedButton.styleFrom(
               elevation: 0,
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

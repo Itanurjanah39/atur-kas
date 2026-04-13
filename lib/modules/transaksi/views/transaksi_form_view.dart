@@ -14,10 +14,10 @@ class TransaksiFormView extends GetView<TransaksiFormController> {
       init: controller,
       builder: (controller) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF5F5F5),
+          backgroundColor: AppColors.background,
           appBar: AppBar(
             elevation: 0,
-            backgroundColor: const Color(0xFFF5F5F5),
+            backgroundColor: AppColors.background,
             foregroundColor: AppColors.black,
             centerTitle: false,
             title: Obx(
@@ -55,7 +55,15 @@ class TransaksiFormView extends GetView<TransaksiFormController> {
                       items: controller.tipeOptions.map((item) {
                         return DropdownMenuItem<String>(
                           value: item['value'],
-                          child: Text(item['label']!),
+                          child: Text(
+                            item['label']!,
+                            style: TextStyle(
+                              fontWeight:
+                                  controller.selectedTipe.value == item['value']
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -76,7 +84,15 @@ class TransaksiFormView extends GetView<TransaksiFormController> {
                       items: controller.kategoriOptions.map((item) {
                         return DropdownMenuItem<String>(
                           value: item,
-                          child: Text(item),
+                          child: Text(
+                            item,
+                            style: TextStyle(
+                              fontWeight:
+                                  controller.selectedKategori.value == item
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
                         );
                       }).toList(),
                       onChanged: (value) => controller.setKategori(value),
@@ -193,10 +209,15 @@ class _TextInput extends StatelessWidget {
       validator: validator,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
+      style: TextStyle(
+        fontWeight: controller.text.isNotEmpty
+            ? FontWeight.bold
+            : FontWeight.normal,
+      ),
       decoration: InputDecoration(
         hintText: hintText,
         filled: true,
-        fillColor: const Color(0xFFF0F1F3),
+        fillColor: AppColors.formBackground,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 14,
           vertical: 14,
@@ -244,7 +265,7 @@ class _DropdownInput<T> extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F1F3),
+        color: AppColors.formBackground,
         borderRadius: BorderRadius.circular(14),
       ),
       child: DropdownButtonHideUnderline(
@@ -276,7 +297,7 @@ class _DateInput extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: const Color(0xFFF0F1F3),
+          color: AppColors.formBackground,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
@@ -284,7 +305,11 @@ class _DateInput extends StatelessWidget {
             Expanded(
               child: Text(
                 text,
-                style: const TextStyle(fontSize: 14, color: AppColors.black),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.black,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const Icon(

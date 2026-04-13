@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../data/models/transaksi_model.dart';
 import '../../transaksi/controllers/transaksi_controller.dart';
+import '../../transaksi/controllers/transaksi_form_controller.dart';
 
 class LaporanController extends GetxController {
   final transaksiController = Get.find<TransaksiController>();
@@ -234,6 +235,7 @@ class LaporanController extends GetxController {
   }
 
   void editTransaksi(TransaksiModel item) {
+    Get.delete<TransaksiFormController>();
     Get.toNamed(AppRoutes.transaksiForm, arguments: item);
   }
 }

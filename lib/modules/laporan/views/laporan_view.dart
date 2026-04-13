@@ -84,7 +84,7 @@ class LaporanView extends GetView<LaporanController> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 18,
                           offset: const Offset(0, 8),
                         ),
@@ -201,7 +201,7 @@ class LaporanView extends GetView<LaporanController> {
                           color: AppColors.background,
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
-                            color: AppColors.tertiary.withOpacity(0.35),
+                            color: AppColors.tertiary.withValues(alpha: 0.35),
                           ),
                         ),
                         child: Row(
@@ -210,7 +210,7 @@ class LaporanView extends GetView<LaporanController> {
                               width: 42,
                               height: 42,
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: const Icon(
@@ -271,7 +271,7 @@ class LaporanView extends GetView<LaporanController> {
                               border: Border.all(
                                 color: isSelected
                                     ? AppColors.primary
-                                    : AppColors.tertiary.withOpacity(0.4),
+                                    : AppColors.tertiary.withValues(alpha: 0.4),
                               ),
                             ),
                             child: Text(
@@ -344,7 +344,7 @@ class _BalanceCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.24),
+            color: AppColors.primary.withValues(alpha: 0.24),
             blurRadius: 24,
             offset: const Offset(0, 14),
           ),
@@ -359,7 +359,7 @@ class _BalanceCard extends StatelessWidget {
               width: 140,
               height: 140,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
             ),
@@ -371,7 +371,7 @@ class _BalanceCard extends StatelessWidget {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.06),
+                color: Colors.white.withValues(alpha: 0.06),
                 shape: BoxShape.circle,
               ),
             ),
@@ -403,7 +403,7 @@ class _BalanceCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.12),
+                  color: Colors.white.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Column(
@@ -476,8 +476,8 @@ class _TransactionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isIncome = item.tipe == 'pemasukan';
     final iconBg = isIncome
-        ? AppColors.tertiary.withOpacity(0.9)
-        : AppColors.accent.withOpacity(0.9);
+        ? AppColors.tertiary.withValues(alpha: 0.9)
+        : AppColors.accent.withValues(alpha: 0.9);
     final amountColor = isIncome ? AppColors.success : AppColors.danger;
 
     final metaText = (item.kategori != null && item.kategori!.trim().isNotEmpty)
@@ -492,12 +492,12 @@ class _TransactionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 18,
             offset: const Offset(0, 10),
           ),
         ],
-        border: Border.all(color: AppColors.tertiary.withOpacity(0.18)),
+        border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.18)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
