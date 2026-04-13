@@ -179,15 +179,7 @@ class _CenterAddButton extends StatelessWidget {
             ),
             child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
           ),
-          const SizedBox(height: 4),
-          Text(
-            'Tambah',
-            style: TextStyle(
-              fontSize: 11,
-              color: isActive ? AppColors.primary : AppColors.grey,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          const SizedBox(height: 8),
         ],
       ),
     );

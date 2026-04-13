@@ -1,3 +1,4 @@
+import 'package:atur_kas/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -233,14 +234,6 @@ class LaporanController extends GetxController {
   }
 
   void editTransaksi(TransaksiModel item) {
-    Get.snackbar(
-      'Edit Transaksi',
-      'Hubungkan ke halaman edit untuk "${item.keterangan}"',
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-    );
-
-    // Contoh:
-    // Get.toNamed(Routes.EDIT_TRANSAKSI, arguments: item);
+    Get.toNamed(AppRoutes.transaksiForm, arguments: item);
   }
 }
