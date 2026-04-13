@@ -313,7 +313,7 @@ class _BalanceCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: const Text(
-                      'ATUR KAS',
+                      'Lingkarustic',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 11,
