@@ -49,10 +49,10 @@ class DashboardView extends GetView<TransaksiController> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Riwayat ${DateHelper.formatBulanTahun(DateTime.now())}',
+                        '  Riwayat ${DateHelper.formatBulanTahun(DateTime.now())}',
                         style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                           color: AppColors.black,
                         ),
                       ),
@@ -63,7 +63,7 @@ class DashboardView extends GetView<TransaksiController> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.accent,
+                        color: AppColors.background,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -375,40 +375,40 @@ class _ModernSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// ICON + BADGE
-          Row(
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(icon, color: iconColor),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  isIncome ? 'IN' : 'OUT',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: iconColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Container(
+          //       width: 46,
+          //       height: 46,
+          //       decoration: BoxDecoration(
+          //         color: iconColor.withValues(alpha: 0.12),
+          //         borderRadius: BorderRadius.circular(16),
+          //       ),
+          //       child: Icon(icon, color: iconColor),
+          //     ),
+          //     const Spacer(),
+          //     Container(
+          //       padding: const EdgeInsets.symmetric(
+          //         horizontal: 10,
+          //         vertical: 4,
+          //       ),
+          //       decoration: BoxDecoration(
+          //         color: iconColor.withValues(alpha: 0.12),
+          //         borderRadius: BorderRadius.circular(20),
+          //       ),
+          //       child: Text(
+          //         isIncome ? 'IN' : 'OUT',
+          //         style: TextStyle(
+          //           fontSize: 11,
+          //           fontWeight: FontWeight.w700,
+          //           color: iconColor,
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
 
-          const SizedBox(height: 18),
+          // const SizedBox(height: 18),
 
           /// TITLE
           Text(
@@ -481,11 +481,11 @@ class _TransactionCard extends StatelessWidget {
         : DateHelper.formatTanggal(item.tanggal);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -499,19 +499,19 @@ class _TransactionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 56,
-            height: 56,
+            width: 24,
+            height: 24,
             decoration: BoxDecoration(
               color: iconBg,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               isIncome ? Icons.south_west_rounded : Icons.north_east_rounded,
-              color: AppColors.black,
-              size: 26,
+              color: isIncome ? AppColors.white : AppColors.danger,
+              size: 16,
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

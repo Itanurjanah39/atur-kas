@@ -15,6 +15,9 @@ class LaporanController extends GetxController {
     'Upah Karyawan',
     'Operasional',
     'Kulakan',
+    'Saldo Tabungan',
+    'Belanja Bulanan',
+    'Sembako',
     'Lainnya',
   ];
 
