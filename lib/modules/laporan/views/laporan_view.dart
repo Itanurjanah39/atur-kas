@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../data/models/transaksi_model.dart';
 import '../../../shared/themes/app_colors.dart';
 import '../../../shared/utils/currency_helper.dart';
 import '../../../shared/utils/date_helper.dart';
@@ -22,8 +21,8 @@ class LaporanView extends GetView<LaporanController> {
             centerTitle: false,
             foregroundColor: AppColors.black,
             title: const Text(
-              'Laporan',
-              style: TextStyle(fontWeight: FontWeight.w800),
+              '   Laporan',
+              style: TextStyle(fontWeight: FontWeight.w700),
             ),
             actions: [
               IconButton(
@@ -43,86 +42,16 @@ class LaporanView extends GetView<LaporanController> {
                   kategori: controller.selectedKategori.value,
                 ),
                 const SizedBox(height: 18),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        controller.headerTitle,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.black,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.accent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '${controller.filteredTransaksi.length} transaksi',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.black,
-                        ),
-                      ),
-                    ),
-                  ],
+                _ReportHeader(
+                  title: controller.headerTitle,
+                  totalMonth: controller.laporanBulanan.length,
                 ),
                 const SizedBox(height: 14),
-                if (controller.filteredTransaksi.isEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 18,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: const Column(
-                      children: [
-                        Icon(
-                          Icons.receipt_long_rounded,
-                          size: 40,
-                          color: AppColors.grey,
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          'Tidak ada transaksi pada periode ini',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: AppColors.black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(height: 6),
-                        Text(
-                          'Coba ubah filter periode atau kategori.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColors.grey, fontSize: 13),
-                        ),
-                      ],
-                    ),
-                  )
+                if (controller.laporanBulanan.isEmpty)
+                  const _EmptyReport()
                 else
-                  ...controller.filteredTransaksi.map(
-                    (item) => _TransactionCard(
-                      item: item,
-                      onEdit: () => controller.editTransaksi(item),
-                      onDelete: () => controller.konfirmasiHapus(item),
-                    ),
+                  ...controller.laporanBulanan.map(
+                    (item) => _MonthlyReportCard(item: item),
                   ),
               ],
             ),
@@ -187,39 +116,34 @@ class LaporanView extends GetView<LaporanController> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Tanggal Mulai',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        _DateInput(
-                          text: 'Pilih tanggal mulai',
-                          date: controller.startDate.value,
-                          onTap: () => controller.pickStartDate(context),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Tanggal Akhir',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        _DateInput(
-                          text: 'Pilih tanggal akhir',
-                          date: controller.endDate.value,
-                          onTap: () => controller.pickEndDate(context),
-                        ),
-                      ],
+                    const Text(
+                      'Tanggal Mulai',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _DateInput(
+                      text: 'Pilih tanggal mulai',
+                      date: controller.startDate.value,
+                      onTap: () => controller.pickStartDate(context),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Tanggal Akhir',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _DateInput(
+                      text: 'Pilih tanggal akhir',
+                      date: controller.endDate.value,
+                      onTap: () => controller.pickEndDate(context),
                     ),
                     const SizedBox(height: 18),
                     const Text(
@@ -304,6 +228,46 @@ class LaporanView extends GetView<LaporanController> {
   }
 }
 
+class _ReportHeader extends StatelessWidget {
+  final String title;
+  final int totalMonth;
+
+  const _ReportHeader({required this.title, required this.totalMonth});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.black,
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: AppColors.accent,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            '$totalMonth bulan',
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _DateInput extends StatelessWidget {
   final String text;
   final DateTime? date;
@@ -371,8 +335,8 @@ class _BalanceCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.24),
-            blurRadius: 24,
+            color: AppColors.primary.withValues(alpha: 0.14),
+            blurRadius: 14,
             offset: const Offset(0, 14),
           ),
         ],
@@ -407,7 +371,7 @@ class _BalanceCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Saldo Saat Ini',
+                'Saldo Periode Ini',
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: 13,
@@ -421,7 +385,7 @@ class _BalanceCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 28,
+                  fontSize: 22,
                   fontWeight: FontWeight.w800,
                   height: 1.1,
                 ),
@@ -436,46 +400,15 @@ class _BalanceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.calendar_month_rounded,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            periodeText,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
+                    _BalanceMetaRow(
+                      icon: Icons.calendar_month_rounded,
+                      text: periodeText,
+                      isPrimary: true,
                     ),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.category_rounded,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            kategori,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
+                    _BalanceMetaRow(
+                      icon: Icons.category_rounded,
+                      text: kategori,
                     ),
                   ],
                 ),
@@ -488,35 +421,53 @@ class _BalanceCard extends StatelessWidget {
   }
 }
 
-class _TransactionCard extends StatelessWidget {
-  final TransaksiModel item;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+class _BalanceMetaRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final bool isPrimary;
 
-  const _TransactionCard({
-    required this.item,
-    required this.onEdit,
-    required this.onDelete,
+  const _BalanceMetaRow({
+    required this.icon,
+    required this.text,
+    this.isPrimary = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isIncome = item.tipe == 'pemasukan';
-    final iconBg = isIncome
-        ? AppColors.tertiary.withValues(alpha: 0.9)
-        : AppColors.accent.withValues(alpha: 0.9);
-    final amountColor = isIncome ? AppColors.success : AppColors.danger;
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.white),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: isPrimary ? Colors.white : Colors.white70,
+              fontSize: isPrimary ? 13 : 12,
+              fontWeight: isPrimary ? FontWeight.w700 : FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
 
-    final metaText = (item.kategori != null && item.kategori!.trim().isNotEmpty)
-        ? '${item.kategori!} • ${DateHelper.formatTanggal(item.tanggal)}'
-        : DateHelper.formatTanggal(item.tanggal);
+class _MonthlyReportCard extends StatelessWidget {
+  final LaporanBulanan item;
 
+  const _MonthlyReportCard({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -524,106 +475,182 @@ class _TransactionCard extends StatelessWidget {
             offset: const Offset(0, 10),
           ),
         ],
-        border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.18)),
+      ),
+      child: Column(
+        children: [
+          /// HEADER (BULAN + SALDO)
+          Row(
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.calendar_month_rounded,
+                  color: AppColors.primary,
+                  size: 16,
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              /// BULAN
+              Expanded(
+                child: Text(
+                  '${_monthName(item.month)} ${item.year}',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
+
+              /// SALDO (KANAN ATAS)
+              Text(
+                CurrencyHelper.toRupiah(item.sisaSaldo),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.black,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          /// PEMASUKAN & PENGELUARAN (1 BARIS)
+          Row(
+            children: [
+              Expanded(
+                child: _ReportRow(
+                  label: 'Pemasukan',
+                  value: item.totalPemasukan,
+                  isIncome: true,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _ReportRow(
+                  label: 'Pengeluaran',
+                  value: item.totalPengeluaran,
+                  isIncome: false,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _monthName(int month) {
+    const bulan = [
+      '',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+
+    return bulan[month];
+  }
+}
+
+class _ReportRow extends StatelessWidget {
+  final String label;
+  final double value;
+  final bool isIncome;
+
+  const _ReportRow({
+    required this.label,
+    required this.value,
+    required this.isIncome,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isIncome ? AppColors.success : AppColors.danger;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Icon(
-              isIncome ? Icons.south_west_rounded : Icons.north_east_rounded,
-              color: AppColors.black,
-              size: 26,
+          Icon(
+            isIncome ? Icons.south_west_rounded : Icons.north_east_rounded,
+            color: color,
+            size: 16,
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              CurrencyHelper.toRupiah(value),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
             ),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.keterangan,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.black,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == 'edit') onEdit();
-                        if (value == 'hapus') onDelete();
-                      },
-                      itemBuilder: (context) => const [
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit_rounded, size: 18),
-                              SizedBox(width: 8),
-                              Text('Edit'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'hapus',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete_rounded, size: 18),
-                              SizedBox(width: 8),
-                              Text('Hapus'),
-                            ],
-                          ),
-                        ),
-                      ],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.more_vert_rounded,
-                          color: AppColors.grey,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '${isIncome ? '+' : '-'} ${CurrencyHelper.toRupiah(item.nominal)}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: amountColor,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  metaText,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.grey,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyReport extends StatelessWidget {
+  const _EmptyReport();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: const Column(
+        children: [
+          Icon(Icons.receipt_long_rounded, size: 40, color: AppColors.grey),
+          SizedBox(height: 12),
+          Text(
+            'Tidak ada laporan pada periode ini',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppColors.black,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
+          ),
+          SizedBox(height: 6),
+          Text(
+            'Coba ubah filter periode atau kategori.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.grey, fontSize: 13),
           ),
         ],
       ),

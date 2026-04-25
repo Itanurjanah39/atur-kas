@@ -61,6 +61,11 @@ class LaporanController extends GetxController {
 
     if (picked != null) {
       startDate.value = DateTime(picked.year, picked.month, picked.day);
+
+      if (endDate.value != null && endDate.value!.isBefore(startDate.value!)) {
+        endDate.value = startDate.value;
+      }
+
       applyFilter();
     }
   }
@@ -69,7 +74,7 @@ class LaporanController extends GetxController {
     final picked = await showDatePicker(
       context: context,
       initialDate: endDate.value ?? DateTime.now(),
-      firstDate: DateTime(DateTime.now().year - 10),
+      firstDate: startDate.value ?? DateTime(DateTime.now().year - 10),
       lastDate: DateTime(DateTime.now().year + 10),
       helpText: 'Pilih Tanggal Akhir',
       cancelText: 'Batal',
@@ -110,13 +115,51 @@ class LaporanController extends GetxController {
 
       final matchKategori = selectedKategori.value == 'Semua Kategori'
           ? true
-          : (item.kategori?.trim().toLowerCase() ==
-                selectedKategori.value.trim().toLowerCase());
+          : item.kategori?.trim().toLowerCase() ==
+                selectedKategori.value.trim().toLowerCase();
 
       return matchTanggal && matchKategori;
     }).toList();
 
     result.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+    return result;
+  }
+
+  List<LaporanBulanan> get laporanBulanan {
+    final Map<String, List<TransaksiModel>> grouped = {};
+
+    for (final item in filteredTransaksi) {
+      final key = '${item.tanggal.year}-${item.tanggal.month}';
+      grouped.putIfAbsent(key, () => []);
+      grouped[key]!.add(item);
+    }
+
+    final result = grouped.entries.map((entry) {
+      final items = entry.value;
+      final firstDate = items.first.tanggal;
+
+      final pemasukan = items
+          .where((e) => e.tipe == 'pemasukan')
+          .fold(0.0, (sum, item) => sum + item.nominal);
+
+      final pengeluaran = items
+          .where((e) => e.tipe == 'pengeluaran')
+          .fold(0.0, (sum, item) => sum + item.nominal);
+
+      return LaporanBulanan(
+        year: firstDate.year,
+        month: firstDate.month,
+        totalPemasukan: pemasukan,
+        totalPengeluaran: pengeluaran,
+      );
+    }).toList();
+
+    result.sort((a, b) {
+      final dateA = DateTime(a.year, a.month);
+      final dateB = DateTime(b.year, b.month);
+      return dateB.compareTo(dateA);
+    });
+
     return result;
   }
 
@@ -133,10 +176,6 @@ class LaporanController extends GetxController {
   }
 
   double get saldoSaatIni => totalPemasukan - totalPengeluaran;
-
-  void applyFilter() {
-    update();
-  }
 
   String get periodeText {
     if (startDate.value == null || endDate.value == null) {
@@ -168,6 +207,10 @@ class LaporanController extends GetxController {
     }
 
     return 'Laporan Periode';
+  }
+
+  void applyFilter() {
+    update();
   }
 
   String formatDate(DateTime date) {
@@ -226,9 +269,9 @@ class LaporanController extends GetxController {
     Get.dialog<bool>(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
+        title: const Text(
           'Hapus Transaksi',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         content: Text(
           'Yakin ingin menghapus "${item.keterangan}"?',
@@ -264,4 +307,20 @@ class LaporanController extends GetxController {
     Get.delete<TransaksiFormController>();
     Get.toNamed(AppRoutes.transaksiForm, arguments: item);
   }
+}
+
+class LaporanBulanan {
+  final int year;
+  final int month;
+  final double totalPemasukan;
+  final double totalPengeluaran;
+
+  const LaporanBulanan({
+    required this.year,
+    required this.month,
+    required this.totalPemasukan,
+    required this.totalPengeluaran,
+  });
+
+  double get sisaSaldo => totalPemasukan - totalPengeluaran;
 }
