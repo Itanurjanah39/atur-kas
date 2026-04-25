@@ -465,7 +465,7 @@ class _TransactionCard extends StatelessWidget {
             offset: const Offset(0, 10),
           ),
         ],
-        border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.18)),
+        //  border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.18)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
