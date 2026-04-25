@@ -1,4 +1,5 @@
 import 'package:atur_kas/routes/app_routes.dart';
+import 'package:atur_kas/shared/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -44,12 +45,11 @@ class DashboardView extends GetView<TransaksiController> {
               Get.back();
 
               await controller.hapusTransaksi(item.id);
-
-              Get.snackbar(
-                'Berhasil',
-                'Transaksi berhasil dihapus',
-                snackPosition: SnackPosition.BOTTOM,
-                margin: const EdgeInsets.all(16),
+              SnackbarHelper.show(
+                Get.context!,
+                "Transaksi berhasil dihapus.",
+                type: SnackbarType.success,
+                title: "Berhasil",
               );
             },
             style: ElevatedButton.styleFrom(

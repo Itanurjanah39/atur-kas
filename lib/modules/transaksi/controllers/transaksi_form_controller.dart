@@ -1,4 +1,5 @@
 import 'package:atur_kas/shared/themes/app_colors.dart';
+import 'package:atur_kas/shared/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -211,13 +212,12 @@ class TransaksiFormController extends GetxController {
 
         Get.back();
 
-        Get.snackbar(
-          'Berhasil',
+        SnackbarHelper.show(
+          Get.context!,
           'Transaksi berhasil diperbarui',
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
+          type: SnackbarType.success,
+          title: "Berhasil",
         );
-        await _goToDashboardAfterSubmit();
       } else {
         await transaksiController.tambahTransaksi(
           tanggal: selectedTanggal.value,
@@ -231,11 +231,11 @@ class TransaksiFormController extends GetxController {
         formKey.currentState?.reset();
         update();
 
-        Get.snackbar(
-          'Berhasil',
+        SnackbarHelper.show(
+          Get.context!,
           'Transaksi berhasil ditambahkan',
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
+          type: SnackbarType.success,
+          title: "Berhasil",
         );
       }
     } finally {
