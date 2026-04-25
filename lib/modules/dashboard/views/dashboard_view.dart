@@ -5,10 +5,23 @@ import '../../../data/models/transaksi_model.dart';
 import '../../../shared/themes/app_colors.dart';
 import '../../../shared/utils/currency_helper.dart';
 import '../../../shared/utils/date_helper.dart';
+import '../../../shared/utils/filter_date_bottom_sheet.dart';
 import '../../transaksi/controllers/transaksi_controller.dart';
 
 class DashboardView extends GetView<TransaksiController> {
   const DashboardView({super.key});
+
+  void _showFilterBottomSheet(BuildContext context) {
+    FilterDateBottomSheet.show(
+      title: 'Filter Dashboard',
+      startDate: controller.selectedStartDate.value,
+      endDate: controller.selectedEndDate.value,
+      onReset: controller.resetDashboardFilter,
+      onPickStartDate: () => controller.pickDashboardStartDate(context),
+      onPickEndDate: () => controller.pickDashboardEndDate(context),
+      onApply: Get.back,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,52 +32,14 @@ class DashboardView extends GetView<TransaksiController> {
           () => RefreshIndicator(
             onRefresh: controller.loadTransaksi,
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 130),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 130),
               children: [
+                _DashboardHeader(
+                  onFilterTap: () => _showFilterBottomSheet(context),
+                ),
+                const SizedBox(height: 16),
                 _BalanceCard(saldo: controller.saldoSaatIni),
                 const SizedBox(height: 14),
-
-                _DateRangeFilter(
-                  startDate: controller.selectedStartDate.value,
-                  endDate: controller.selectedEndDate.value,
-                  onTap: () async {
-                    final pickedRange = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2100),
-                      initialDateRange: DateTimeRange(
-                        start: controller.selectedStartDate.value,
-                        end: controller.selectedEndDate.value,
-                      ),
-
-                      builder: (context, child) {
-                        return Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                              maxWidth: 350, // bikin seperti popup
-                              maxHeight: 560,
-                            ),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(16),
-                              clipBehavior: Clip.antiAlias,
-                              child: child!,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-
-                    if (pickedRange != null) {
-                      controller.ubahDateRange(
-                        pickedRange.start,
-                        pickedRange.end,
-                      );
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 14),
-
                 Row(
                   children: [
                     Expanded(
@@ -86,84 +61,15 @@ class DashboardView extends GetView<TransaksiController> {
                     ),
                   ],
                 ),
-                // children: [
-                //   _BalanceCard(saldo: controller.saldoSaatIni),
-                //   const SizedBox(height: 18),
-                //   Row(
-                //     children: [
-                //       Expanded(
-                //         child: _ModernSummaryCard(
-                //           title: 'Pemasukan',
-                //           value: controller.totalPemasukanBulanIni,
-                //           icon: Icons.south_west_rounded,
-                //           isIncome: true,
-                //         ),
-                //       ),
-                //       const SizedBox(width: 12),
-                //       Expanded(
-                //         child: _ModernSummaryCard(
-                //           title: 'Pengeluaran',
-                //           value: controller.totalPengeluaranBulanIni,
-                //           icon: Icons.north_east_rounded,
-                //           isIncome: false,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '  Riwayat ${DateHelper.formatTanggal(controller.selectedStartDate.value)} - ${DateHelper.formatTanggal(controller.selectedEndDate.value)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.black,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '${controller.transaksiFilterTanggal.length} transaksi',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.black,
-                        ),
-                      ),
-                    ),
-                  ],
+                _HistoryHeader(
+                  startDate: controller.selectedStartDate.value,
+                  endDate: controller.selectedEndDate.value,
+                  total: controller.transaksiFilterTanggal.length,
                 ),
                 const SizedBox(height: 14),
-                if (controller.transaksiBulanIni.isEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 18,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: const Text(
-                      'Belum ada transaksi di tanggal ini',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.grey, fontSize: 14),
-                    ),
-                  )
+                if (controller.transaksiFilterTanggal.isEmpty)
+                  const _EmptyTransaction()
                 else
                   ...controller.transaksiFilterTanggal.map(
                     (item) => _TransactionCard(item: item),
@@ -177,6 +83,120 @@ class DashboardView extends GetView<TransaksiController> {
   }
 }
 
+class _DashboardHeader extends StatelessWidget {
+  final VoidCallback onFilterTap;
+
+  const _DashboardHeader({required this.onFilterTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Expanded(
+          child: Text(
+            'Dashboard',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: AppColors.black,
+            ),
+          ),
+        ),
+        InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onFilterTap,
+          child: const Icon(
+            Icons.tune_rounded,
+            color: AppColors.black,
+            size: 26,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HistoryHeader extends StatelessWidget {
+  final DateTime startDate;
+  final DateTime endDate;
+  final int total;
+
+  const _HistoryHeader({
+    required this.startDate,
+    required this.endDate,
+    required this.total,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isSameDate =
+        startDate.year == endDate.year &&
+        startDate.month == endDate.month &&
+        startDate.day == endDate.day;
+
+    final periodeText = isSameDate
+        ? DateHelper.formatTanggal(startDate)
+        : '${DateHelper.formatTanggal(startDate)} - ${DateHelper.formatTanggal(endDate)}';
+
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Riwayat $periodeText',
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: AppColors.black,
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            '$total transaksi',
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: AppColors.black,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EmptyTransaction extends StatelessWidget {
+  const _EmptyTransaction();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: const Text(
+        'Belum ada transaksi pada periode ini',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: AppColors.grey, fontSize: 14),
+      ),
+    );
+  }
+}
+
 class _BalanceCard extends StatelessWidget {
   final double saldo;
 
@@ -185,9 +205,9 @@ class _BalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(26),
         gradient: const LinearGradient(
           colors: [AppColors.primary, AppColors.secondary],
           begin: Alignment.topLeft,
@@ -195,20 +215,20 @@ class _BalanceCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.24),
-            blurRadius: 24,
-            offset: const Offset(0, 14),
+            color: AppColors.primary.withValues(alpha: 0.22),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Stack(
         children: [
           Positioned(
-            top: -20,
-            right: -10,
+            top: -24,
+            right: -16,
             child: Container(
-              width: 140,
-              height: 140,
+              width: 130,
+              height: 130,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
@@ -216,11 +236,11 @@ class _BalanceCard extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: -30,
-            left: -16,
+            bottom: -34,
+            left: -22,
             child: Container(
-              width: 120,
-              height: 120,
+              width: 110,
+              height: 110,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.06),
                 shape: BoxShape.circle,
@@ -234,50 +254,40 @@ class _BalanceCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 42,
-                    height: 42,
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(13),
                     ),
                     child: const Icon(
                       Icons.account_balance_wallet_rounded,
                       color: Colors.white,
+                      size: 21,
                     ),
                   ),
                   const Spacer(),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 7,
+                      horizontal: 11,
+                      vertical: 6,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.shield_outlined,
-                          size: 14,
-                          color: Colors.white,
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          'Saldo Aktif',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    child: const Text(
+                      'Saldo Aktif',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 18),
               const Text(
                 'Saldo Saat Ini',
                 style: TextStyle(
@@ -293,103 +303,38 @@ class _BalanceCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 28,
+                  fontSize: 25,
                   fontWeight: FontWeight.w800,
                   height: 1.1,
                 ),
               ),
-              const SizedBox(height: 18),
-              Row(
+              const SizedBox(height: 16),
+              const Row(
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Pemilik',
-                          style: TextStyle(color: Colors.white60, fontSize: 11),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'ATUR KAS',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.8,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      'ATUR KAS',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.8,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'ID Dompet',
-                        style: TextStyle(color: Colors.white60, fontSize: 11),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '•••• 1024',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    '•••• 1024',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 2,
+                    ),
                   ),
                 ],
               ),
-              // const SizedBox(height: 18),
-              // Row(
-              //   children: [
-              //     Container(
-              //       width: 36,
-              //       height: 36,
-              //       decoration: BoxDecoration(
-              //         color: Colors.white.withValues(alpha: 0.18),
-              //         shape: BoxShape.circle,
-              //       ),
-              //     ),
-              //     Transform.translate(
-              //       offset: const Offset(-10, 0),
-              //       child: Container(
-              //         width: 36,
-              //         height: 36,
-              //         decoration: BoxDecoration(
-              //           color: Colors.white.withValues(alpha: 0.26),
-              //           shape: BoxShape.circle,
-              //         ),
-              //       ),
-              //     ),
-              //     const Spacer(),
-              //     Container(
-              //       padding: const EdgeInsets.symmetric(
-              //         horizontal: 10,
-              //         vertical: 6,
-              //       ),
-              //       decoration: BoxDecoration(
-              //         color: Colors.white.withValues(alpha: 0.14),
-              //         borderRadius: BorderRadius.circular(16),
-              //       ),
-              //       child: const Text(
-              //         'ATUR KAS',
-              //         style: TextStyle(
-              //           color: Colors.white,
-              //           fontSize: 11,
-              //           letterSpacing: 1.5,
-              //           fontWeight: FontWeight.w700,
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
             ],
           ),
         ],
@@ -440,7 +385,8 @@ class _ModernSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// TITLE
+          Icon(icon, size: 20, color: iconColor),
+          const SizedBox(height: 8),
           Text(
             title,
             style: const TextStyle(
@@ -449,10 +395,7 @@ class _ModernSummaryCard extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-
           const SizedBox(height: 8),
-
-          /// VALUE
           Text(
             CurrencyHelper.toRupiah(value),
             maxLines: 2,
@@ -463,10 +406,7 @@ class _ModernSummaryCard extends StatelessWidget {
               color: valueColor,
             ),
           ),
-
           const SizedBox(height: 6),
-
-          /// SUBTEXT
           Row(
             children: [
               Icon(
@@ -478,7 +418,7 @@ class _ModernSummaryCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                'Bulan berjalan',
+                'Periode filter',
                 style: TextStyle(
                   fontSize: 11,
                   color: AppColors.black.withValues(alpha: 0.6),
@@ -501,9 +441,11 @@ class _TransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isIncome = item.tipe == 'pemasukan';
+
     final iconBg = isIncome
-        ? AppColors.tertiary.withValues(alpha: 0.9)
-        : AppColors.accent.withValues(alpha: 0.9);
+        ? AppColors.accent.withValues(alpha: 0.9)
+        : AppColors.danger.withValues(alpha: 0.22);
+
     final amountColor = isIncome ? AppColors.success : AppColors.danger;
 
     final metaText = (item.kategori != null && item.kategori!.trim().isNotEmpty)
@@ -537,7 +479,7 @@ class _TransactionCard extends StatelessWidget {
             ),
             child: Icon(
               isIncome ? Icons.south_west_rounded : Icons.north_east_rounded,
-              color: isIncome ? AppColors.white : AppColors.danger,
+              color: isIncome ? AppColors.success : AppColors.danger,
               size: 16,
             ),
           ),
@@ -575,96 +517,20 @@ class _TransactionCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        metaText,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grey,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+                Text(
+                  metaText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _DateRangeFilter extends StatelessWidget {
-  final DateTime startDate;
-  final DateTime endDate;
-  final VoidCallback onTap;
-
-  const _DateRangeFilter({
-    required this.startDate,
-    required this.endDate,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isSameDate =
-        startDate.year == endDate.year &&
-        startDate.month == endDate.month &&
-        startDate.day == endDate.day;
-
-    final label = isSameDate
-        ? DateHelper.formatTanggal(startDate)
-        : '${DateHelper.formatTanggal(startDate)} - ${DateHelper.formatTanggal(endDate)}';
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.18)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 14,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            const Icon(
-              Icons.date_range_rounded,
-              size: 20,
-              color: AppColors.primary,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.black,
-                ),
-              ),
-            ),
-            const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: AppColors.grey,
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../data/models/transaksi_model.dart';
@@ -97,39 +98,92 @@ class TransaksiController extends GetxController {
 
   double get saldoBulanIni => totalPemasukanBulanIni - totalPengeluaranBulanIni;
 
-  final selectedDate = DateTime.now().obs;
+  //   final selectedDate = DateTime.now().obs;
 
-  void ubahTanggalFilter(DateTime date) {
-    selectedDate.value = date;
-  }
+  //   void ubahTanggalFilter(DateTime date) {
+  //     selectedDate.value = date;
+  //   }
 
-  List<TransaksiModel> get transaksiTanggalDipilih {
-    final date = selectedDate.value;
+  //   List<TransaksiModel> get transaksiTanggalDipilih {
+  //     final date = selectedDate.value;
 
-    final result = transaksiList.where((item) {
-      return item.tanggal.year == date.year &&
-          item.tanggal.month == date.month &&
-          item.tanggal.day == date.day;
-    }).toList();
+  //     final result = transaksiList.where((item) {
+  //       return item.tanggal.year == date.year &&
+  //           item.tanggal.month == date.month &&
+  //           item.tanggal.day == date.day;
+  //     }).toList();
 
-    result.sort((a, b) => b.tanggal.compareTo(a.tanggal));
-    return result;
-  }
+  //     result.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+  //     return result;
+  //   }
 
-  double get totalPemasukanTanggalDipilih {
-    return transaksiTanggalDipilih
-        .where((e) => e.tipe == 'pemasukan')
-        .fold(0.0, (sum, item) => sum + item.nominal);
-  }
+  //   double get totalPemasukanTanggalDipilih {
+  //     return transaksiTanggalDipilih
+  //         .where((e) => e.tipe == 'pemasukan')
+  //         .fold(0.0, (sum, item) => sum + item.nominal);
+  //   }
 
-  double get totalPengeluaranTanggalDipilih {
-    return transaksiTanggalDipilih
-        .where((e) => e.tipe == 'pengeluaran')
-        .fold(0.0, (sum, item) => sum + item.nominal);
-  }
+  //   double get totalPengeluaranTanggalDipilih {
+  //     return transaksiTanggalDipilih
+  //         .where((e) => e.tipe == 'pengeluaran')
+  //         .fold(0.0, (sum, item) => sum + item.nominal);
+  //   }
 
-  double get saldoTanggalDipilih =>
-      totalPemasukanTanggalDipilih - totalPengeluaranTanggalDipilih;
+  //   double get saldoTanggalDipilih =>
+  //       totalPemasukanTanggalDipilih - totalPengeluaranTanggalDipilih;
+  //   final selectedStartDate = DateTime(
+  //     DateTime.now().year,
+  //     DateTime.now().month,
+  //     1,
+  //   ).obs;
+
+  //   final selectedEndDate = DateTime.now().obs;
+
+  //   void ubahDateRange(DateTime start, DateTime end) {
+  //     selectedStartDate.value = start;
+  //     selectedEndDate.value = end;
+  //   }
+
+  //   List<TransaksiModel> get transaksiFilterTanggal {
+  //     final start = DateTime(
+  //       selectedStartDate.value.year,
+  //       selectedStartDate.value.month,
+  //       selectedStartDate.value.day,
+  //     );
+
+  //     final end = DateTime(
+  //       selectedEndDate.value.year,
+  //       selectedEndDate.value.month,
+  //       selectedEndDate.value.day,
+  //       23,
+  //       59,
+  //       59,
+  //     );
+
+  //     final result = transaksiList.where((item) {
+  //       return item.tanggal.isAfter(start.subtract(const Duration(seconds: 1))) &&
+  //           item.tanggal.isBefore(end.add(const Duration(seconds: 1)));
+  //     }).toList();
+
+  //     result.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+  //     return result;
+  //   }
+
+  //   double get totalPemasukanFilterTanggal {
+  //     return transaksiFilterTanggal
+  //         .where((e) => e.tipe == 'pemasukan')
+  //         .fold(0.0, (sum, item) => sum + item.nominal);
+  //   }
+
+  //   double get totalPengeluaranFilterTanggal {
+  //     return transaksiFilterTanggal
+  //         .where((e) => e.tipe == 'pengeluaran')
+  //         .fold(0.0, (sum, item) => sum + item.nominal);
+  //   }
+
+  //   double get saldoFilterTanggal =>
+  //       totalPemasukanFilterTanggal - totalPengeluaranFilterTanggal;
+  // }
   final selectedStartDate = DateTime(
     DateTime.now().year,
     DateTime.now().month,
@@ -138,9 +192,41 @@ class TransaksiController extends GetxController {
 
   final selectedEndDate = DateTime.now().obs;
 
-  void ubahDateRange(DateTime start, DateTime end) {
-    selectedStartDate.value = start;
-    selectedEndDate.value = end;
+  void resetDashboardFilter() {
+    final now = DateTime.now();
+
+    selectedStartDate.value = DateTime(now.year, now.month, 1);
+    selectedEndDate.value = now;
+  }
+
+  Future<void> pickDashboardStartDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: selectedStartDate.value,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      selectedStartDate.value = picked;
+
+      if (selectedEndDate.value.isBefore(picked)) {
+        selectedEndDate.value = picked;
+      }
+    }
+  }
+
+  Future<void> pickDashboardEndDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: selectedEndDate.value,
+      firstDate: selectedStartDate.value,
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      selectedEndDate.value = picked;
+    }
   }
 
   List<TransaksiModel> get transaksiFilterTanggal {
