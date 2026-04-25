@@ -1,3 +1,4 @@
+import 'package:atur_kas/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,6 +8,7 @@ import '../../../shared/utils/currency_helper.dart';
 import '../../../shared/utils/date_helper.dart';
 import '../../../shared/utils/filter_date_bottom_sheet.dart';
 import '../../transaksi/controllers/transaksi_controller.dart';
+import '../../transaksi/controllers/transaksi_form_controller.dart';
 
 class DashboardView extends GetView<TransaksiController> {
   const DashboardView({super.key});
@@ -21,6 +23,57 @@ class DashboardView extends GetView<TransaksiController> {
       onPickEndDate: () => controller.pickDashboardEndDate(context),
       onApply: Get.back,
     );
+  }
+
+  void _confirmDelete(TransaksiModel item) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Hapus Transaksi',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        ),
+        content: Text(
+          'Yakin ingin menghapus "${item.keterangan}"?',
+          style: const TextStyle(fontSize: 14),
+        ),
+        actions: [
+          TextButton(onPressed: Get.back, child: const Text('Batal')),
+          ElevatedButton(
+            onPressed: () async {
+              Get.back();
+
+              await controller.hapusTransaksi(item.id);
+
+              Get.snackbar(
+                'Berhasil',
+                'Transaksi berhasil dihapus',
+                snackPosition: SnackPosition.BOTTOM,
+                margin: const EdgeInsets.all(16),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Ya, Hapus'),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  void _editTransaksi(TransaksiModel item) {
+    if (Get.isRegistered<TransaksiFormController>()) {
+      Get.delete<TransaksiFormController>();
+    }
+
+    Get.toNamed(AppRoutes.transaksiForm, arguments: item);
   }
 
   @override
@@ -72,7 +125,11 @@ class DashboardView extends GetView<TransaksiController> {
                   const _EmptyTransaction()
                 else
                   ...controller.transaksiFilterTanggal.map(
-                    (item) => _TransactionCard(item: item),
+                    (item) => _TransactionCard(
+                      item: item,
+                      onEdit: () => _editTransaksi(item),
+                      onDelete: () => _confirmDelete(item),
+                    ),
                   ),
               ],
             ),
@@ -435,8 +492,14 @@ class _ModernSummaryCard extends StatelessWidget {
 
 class _TransactionCard extends StatelessWidget {
   final TransaksiModel item;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
-  const _TransactionCard({required this.item});
+  const _TransactionCard({
+    required this.item,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -465,67 +528,203 @@ class _TransactionCard extends StatelessWidget {
             offset: const Offset(0, 10),
           ),
         ],
-        //  border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.18)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              isIncome ? Icons.south_west_rounded : Icons.north_east_rounded,
-              color: isIncome ? AppColors.success : AppColors.danger,
-              size: 16,
-            ),
-          ),
-          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: Text(
+                //         item.keterangan,
+                //         maxLines: 1,
+                //         overflow: TextOverflow.ellipsis,
+                //         style: const TextStyle(
+                //           fontSize: 15,
+                //           fontWeight: FontWeight.w700,
+                //           color: AppColors.black,
+                //         ),
+                //       ),
+                //     ),
+                //     const SizedBox(width: 10),
+                //     Flexible(
+                //       child: Text(
+                //         '${isIncome ? '+' : '-'} ${CurrencyHelper.toRupiah(item.nominal)}',
+                //         maxLines: 1,
+                //         overflow: TextOverflow.ellipsis,
+                //         textAlign: TextAlign.right,
+                //         style: TextStyle(
+                //           fontSize: 14,
+                //           fontWeight: FontWeight.w800,
+                //           color: amountColor,
+                //         ),
+                //       ),
+                //     ),
+                //     const SizedBox(width: 4),
+                //     PopupMenuButton<String>(
+                //       onSelected: (value) {
+                //         if (value == 'edit') onEdit();
+                //         if (value == 'hapus') onDelete();
+                //       },
+                //       itemBuilder: (context) => const [
+                //         PopupMenuItem(
+                //           value: 'edit',
+                //           child: Row(
+                //             children: [
+                //               Icon(Icons.edit_rounded, size: 18),
+                //               SizedBox(width: 8),
+                //               Text('Edit'),
+                //             ],
+                //           ),
+                //         ),
+                //         PopupMenuItem(
+                //           value: 'hapus',
+                //           child: Row(
+                //             children: [
+                //               Icon(Icons.delete_rounded, size: 18),
+                //               SizedBox(width: 8),
+                //               Text('Hapus'),
+                //             ],
+                //           ),
+                //         ),
+                //       ],
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.all(Radius.circular(16)),
+                //       ),
+                //       child: const Padding(
+                //         padding: EdgeInsets.all(4),
+                //         child: Icon(
+                //           Icons.more_vert_rounded,
+                //           color: AppColors.grey,
+                //           size: 20,
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        item.keterangan,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.black,
-                        ),
+                    /// ICON KIRI
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: iconBg,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        isIncome
+                            ? Icons.south_west_rounded
+                            : Icons.north_east_rounded,
+                        color: isIncome ? AppColors.success : AppColors.danger,
+                        size: 16,
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Text(
-                      '${isIncome ? '+' : '-'} ${CurrencyHelper.toRupiah(item.nominal)}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: amountColor,
+
+                    const SizedBox(width: 12),
+
+                    /// CONTENT + RIGHT SIDE
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          /// TEXT
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.keterangan,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  metaText,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.grey,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(width: 10),
+
+                          /// NOMINAL + MENU (KANAN)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              /// MENU (pojok kanan atas)
+                              PopupMenuButton<String>(
+                                padding: EdgeInsets.zero,
+                                onSelected: (value) {
+                                  if (value == 'edit') onEdit();
+                                  if (value == 'hapus') onDelete();
+                                },
+                                itemBuilder: (context) => const [
+                                  PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit_rounded, size: 18),
+                                        SizedBox(width: 8),
+                                        Text('Edit'),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 'hapus',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete_rounded, size: 18),
+                                        SizedBox(width: 8),
+                                        Text('Hapus'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                child: const Icon(
+                                  Icons.more_vert_rounded,
+                                  color: AppColors.grey,
+                                  size: 20,
+                                ),
+                              ),
+
+                              const SizedBox(height: 6),
+
+                              /// NOMINAL
+                              Text(
+                                '${isIncome ? '+' : '-'} ${CurrencyHelper.toRupiah(item.nominal)}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: amountColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  metaText,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.grey,
-                    fontWeight: FontWeight.w500,
-                  ),
                 ),
               ],
             ),

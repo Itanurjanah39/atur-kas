@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../data/models/transaksi_model.dart';
 import '../../transaksi/controllers/transaksi_controller.dart';
+import '../../main_nav/controllers/main_nav_controller.dart';
 
 class TransaksiFormController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -40,7 +41,7 @@ class TransaksiFormController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _loadArgumentsIfExists();
+    loadArgumentsIfExists();
   }
 
   void resetForm() {
@@ -53,7 +54,7 @@ class TransaksiFormController extends GetxController {
     nominalController.clear();
   }
 
-  void _loadArgumentsIfExists() {
+  void loadArgumentsIfExists() {
     resetForm();
 
     final args = Get.arguments;
@@ -216,6 +217,7 @@ class TransaksiFormController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(16),
         );
+        await _goToDashboardAfterSubmit();
       } else {
         await transaksiController.tambahTransaksi(
           tanggal: selectedTanggal.value,
@@ -238,6 +240,18 @@ class TransaksiFormController extends GetxController {
       }
     } finally {
       isSubmitting.value = false;
+    }
+  }
+
+  Future<void> _goToDashboardAfterSubmit() async {
+    await transaksiController.loadTransaksi();
+
+    if (Get.isRegistered<MainNavController>()) {
+      Get.find<MainNavController>().changeIndex(0);
+    }
+
+    if (Get.key.currentState?.canPop() ?? false) {
+      Get.back();
     }
   }
 }
