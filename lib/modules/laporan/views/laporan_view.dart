@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 
 import '../../../shared/themes/app_colors.dart';
 import '../../../shared/utils/currency_helper.dart';
-import '../../../shared/utils/date_helper.dart';
 import '../controllers/laporan_controller.dart';
 
 class LaporanView extends GetView<LaporanController> {
@@ -39,7 +38,6 @@ class LaporanView extends GetView<LaporanController> {
                 _BalanceCard(
                   saldo: controller.saldoSaatIni,
                   periodeText: controller.periodeText,
-                  kategori: controller.selectedKategori.value,
                 ),
                 const SizedBox(height: 18),
                 _ReportHeader(
@@ -106,48 +104,9 @@ class LaporanView extends GetView<LaporanController> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Periode',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Tanggal Mulai',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    _DateInput(
-                      text: 'Pilih tanggal mulai',
-                      date: controller.startDate.value,
-                      onTap: () => controller.pickStartDate(context),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Tanggal Akhir',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    _DateInput(
-                      text: 'Pilih tanggal akhir',
-                      date: controller.endDate.value,
-                      onTap: () => controller.pickEndDate(context),
-                    ),
                     const SizedBox(height: 18),
                     const Text(
-                      'Kategori',
+                      'Bulan',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -158,13 +117,13 @@ class LaporanView extends GetView<LaporanController> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: controller.kategoriOptions.map((kategori) {
+                      children: controller.monthOptions.map((month) {
                         final isSelected =
-                            controller.selectedKategori.value == kategori;
+                            controller.selectedMonth.value == month;
 
                         return InkWell(
                           borderRadius: BorderRadius.circular(999),
-                          onTap: () => controller.setKategori(kategori),
+                          onTap: () => controller.setMonth(month),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 180),
                             padding: const EdgeInsets.symmetric(
@@ -183,7 +142,7 @@ class LaporanView extends GetView<LaporanController> {
                               ),
                             ),
                             child: Text(
-                              kategori,
+                              controller.monthFilterName(month),
                               style: TextStyle(
                                 color: isSelected
                                     ? Colors.white
@@ -195,6 +154,63 @@ class LaporanView extends GetView<LaporanController> {
                           ),
                         );
                       }).toList(),
+                    ),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'Tahun',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<int>(
+                      initialValue: controller.selectedYear.value,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: AppColors.background,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: AppColors.tertiary.withValues(alpha: 0.35),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: AppColors.tertiary.withValues(alpha: 0.35),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                      items: controller.yearOptions.map((year) {
+                        return DropdownMenuItem<int>(
+                          value: year,
+                          child: Text(
+                            year.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.black,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          controller.setYear(value);
+                        }
+                      },
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
@@ -268,59 +284,11 @@ class _ReportHeader extends StatelessWidget {
   }
 }
 
-class _DateInput extends StatelessWidget {
-  final String text;
-  final DateTime? date;
-  final VoidCallback onTap;
-
-  const _DateInput({required this.text, this.date, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.35)),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                date != null ? DateHelper.formatTanggal(date!) : text,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const Icon(
-              Icons.calendar_today_outlined,
-              size: 18,
-              color: AppColors.grey,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _BalanceCard extends StatelessWidget {
   final double saldo;
   final String periodeText;
-  final String kategori;
 
-  const _BalanceCard({
-    required this.saldo,
-    required this.periodeText,
-    required this.kategori,
-  });
+  const _BalanceCard({required this.saldo, required this.periodeText});
 
   @override
   Widget build(BuildContext context) {
@@ -397,20 +365,9 @@ class _BalanceCard extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _BalanceMetaRow(
-                      icon: Icons.calendar_month_rounded,
-                      text: periodeText,
-                      isPrimary: true,
-                    ),
-                    const SizedBox(height: 8),
-                    _BalanceMetaRow(
-                      icon: Icons.category_rounded,
-                      text: kategori,
-                    ),
-                  ],
+                child: _BalanceMetaRow(
+                  icon: Icons.calendar_month_rounded,
+                  text: periodeText,
                 ),
               ),
             ],
@@ -424,13 +381,8 @@ class _BalanceCard extends StatelessWidget {
 class _BalanceMetaRow extends StatelessWidget {
   final IconData icon;
   final String text;
-  final bool isPrimary;
 
-  const _BalanceMetaRow({
-    required this.icon,
-    required this.text,
-    this.isPrimary = false,
-  });
+  const _BalanceMetaRow({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -443,10 +395,10 @@ class _BalanceMetaRow extends StatelessWidget {
             text,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: isPrimary ? Colors.white : Colors.white70,
-              fontSize: isPrimary ? 13 : 12,
-              fontWeight: isPrimary ? FontWeight.w700 : FontWeight.w600,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -478,7 +430,6 @@ class _MonthlyReportCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          /// HEADER (BULAN + SALDO)
           Row(
             children: [
               Container(
@@ -495,8 +446,6 @@ class _MonthlyReportCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-
-              /// BULAN
               Expanded(
                 child: Text(
                   '${_monthName(item.month)} ${item.year}',
@@ -507,8 +456,6 @@ class _MonthlyReportCard extends StatelessWidget {
                   ),
                 ),
               ),
-
-              /// SALDO (KANAN ATAS)
               Text(
                 CurrencyHelper.toRupiah(item.sisaSaldo),
                 style: const TextStyle(
@@ -519,23 +466,15 @@ class _MonthlyReportCard extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 12),
-
-          /// PEMASUKAN & PENGELUARAN (1 BARIS)
           Row(
             children: [
               Expanded(
-                child: _ReportRow(
-                  label: 'Pemasukan',
-                  value: item.totalPemasukan,
-                  isIncome: true,
-                ),
+                child: _ReportRow(value: item.totalPemasukan, isIncome: true),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _ReportRow(
-                  label: 'Pengeluaran',
                   value: item.totalPengeluaran,
                   isIncome: false,
                 ),
@@ -569,15 +508,10 @@ class _MonthlyReportCard extends StatelessWidget {
 }
 
 class _ReportRow extends StatelessWidget {
-  final String label;
   final double value;
   final bool isIncome;
 
-  const _ReportRow({
-    required this.label,
-    required this.value,
-    required this.isIncome,
-  });
+  const _ReportRow({required this.value, required this.isIncome});
 
   @override
   Widget build(BuildContext context) {
@@ -648,7 +582,7 @@ class _EmptyReport extends StatelessWidget {
           ),
           SizedBox(height: 6),
           Text(
-            'Coba ubah filter periode atau kategori.',
+            'Coba ubah filter bulan atau tahun.',
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.grey, fontSize: 13),
           ),
