@@ -42,6 +42,12 @@ class TransaksiFormController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // loadArgumentsIfExists();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
     loadArgumentsIfExists();
   }
 
