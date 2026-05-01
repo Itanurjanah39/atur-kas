@@ -68,7 +68,7 @@ class TransaksiFormController extends GetxController {
       selectedTanggal.value = args.tanggal;
       selectedKategori.value = args.kategori;
       keteranganController.text = args.keterangan;
-      nominalController.text = args.nominal.toStringAsFixed(0);
+      nominalController.text = formatNominal(args.nominal);
     }
   }
 
@@ -190,6 +190,7 @@ class TransaksiFormController extends GetxController {
 
     if (confirmed == true) {
       await submitForm();
+      await _goToDashboardAfterSubmit();
     }
   }
 
@@ -210,7 +211,9 @@ class TransaksiFormController extends GetxController {
 
         await transaksiController.editTransaksi(updated);
 
-        Get.back();
+        resetForm();
+        formKey.currentState?.reset();
+        update();
 
         SnackbarHelper.show(
           Get.context!,
@@ -243,6 +246,14 @@ class TransaksiFormController extends GetxController {
     }
   }
 
+  String formatNominal(num value) {
+    final raw = value.toStringAsFixed(0);
+    return raw.replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (match) => '.',
+    );
+  }
+
   Future<void> _goToDashboardAfterSubmit() async {
     await transaksiController.loadTransaksi();
 
@@ -250,8 +261,8 @@ class TransaksiFormController extends GetxController {
       Get.find<MainNavController>().changeIndex(0);
     }
 
-    if (Get.key.currentState?.canPop() ?? false) {
-      Get.back();
-    }
+    resetForm();
+    formKey.currentState?.reset();
+    update();
   }
 }

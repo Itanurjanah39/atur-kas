@@ -1,4 +1,6 @@
+import 'package:atur_kas/shared/utils/currency_input_formater.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../shared/themes/app_colors.dart';
@@ -120,6 +122,7 @@ class TransaksiFormView extends GetView<TransaksiFormController> {
                     validator: controller.validateNominal,
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
+                    inputFormatters: [CurrencyInputFormatter()],
                   ),
                   const SizedBox(height: 28),
 
@@ -187,12 +190,13 @@ class _FormLabel extends StatelessWidget {
   }
 }
 
-class _TextInput extends StatelessWidget {
+class _TextInput extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
 
   const _TextInput({
     required this.controller,
@@ -200,22 +204,45 @@ class _TextInput extends StatelessWidget {
     this.validator,
     this.keyboardType,
     this.textInputAction,
+    this.inputFormatters,
   });
+
+  @override
+  State<_TextInput> createState() => _TextInputState();
+}
+
+class _TextInputState extends State<_TextInput> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_onChange);
+  }
+
+  void _onChange() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onChange);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      validator: validator,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
+      controller: widget.controller,
+      validator: widget.validator,
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.textInputAction,
+      inputFormatters: widget.inputFormatters,
       style: TextStyle(
-        fontWeight: controller.text.isNotEmpty
-            ? FontWeight.bold
+        fontWeight: widget.controller.text.isNotEmpty
+            ? FontWeight.w700
             : FontWeight.normal,
       ),
       decoration: InputDecoration(
-        hintText: hintText,
+        hintText: widget.hintText,
         filled: true,
         fillColor: AppColors.formBackground,
         contentPadding: const EdgeInsets.symmetric(
@@ -225,25 +252,6 @@ class _TextInput extends StatelessWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-            color: AppColors.primary.withValues(alpha: 0.6),
-            width: 1.2,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Colors.redAccent),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Colors.redAccent),
         ),
       ),
     );
